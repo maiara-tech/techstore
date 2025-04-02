@@ -1,0 +1,121 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}Bem-vindo à TechStore{% endblock %}
+
+{% block content %}
+<div class="banner-container">
+    <img src="{% static 'portal/images/banner_tecnologia.webp' %}" alt="Banner TechStore" class="banner-image">
+    <div class="banner-content-below">
+        <p class="slogan">Descubra as melhores ofertas e inovações em Tecnologia!</p>
+        <a href="{% url 'listar_produtos' %}" class="btn btn-primary btn-lg btn-ver-produtos">
+            Ver Produtos
+        </a>
+    </div>
+</div>
+
+<div class="container dashboard mt-4">
+    <h2 class="text-center mb-4">Relatório de Produtos</h2>
+
+    <div class="card mb-4">
+        <div class="card-body text-center">
+            <h5 class="card-title">Vendas Totais</h5>
+            <p class="display-4 text-primary">{{ vendas_totais }}</p>
+        </div>
+    </div>
+
+   <div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card bg-primary"> <!-- Azul -->
+            <div class="card-body text-center">
+                <h5 class="card-title">Total de Produtos</h5>
+                <p class="display-4">{{ total_produtos }}</p>
+                <P>
+                    </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-warning"> <!-- Amarelo -->
+            <div class="card-body text-center">
+                <h5 class="card-title">Menor em Estoque</h5>
+                <p class="h5">{{ produto_menor_estoque.nome|default:"N/A" }}</p>
+                <p class="display-4">{{ produto_menor_estoque.quantidade_estoque|default:"0" }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-success"> <!-- Verde -->
+            <div class="card-body text-center">
+                <h5 class="card-title">Mais Caro</h5>
+                <p class="h5">{{ produto_mais_caro.nome|default:"N/A" }}</p>
+                <p class="display-4">R$ {{ produto_mais_caro.preco|default:"0" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card chart-card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Distribuição de Estoque</h5>
+                    <canvas id="estoqueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card chart-card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Histórico de Cadastros</h5>
+                    <canvas id="cadastrosChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'admin/js/chart.umd.min.js' %}"></script>
+<script>
+    const estoqueCtx = document.getElementById('estoqueChart').getContext('2d');
+    const estoqueChart = new Chart(estoqueCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Disponível', 'Estoque Baixo', 'Esgotado'],
+            datasets: [{
+                data: [
+                    {{ estoque_disponivel }},
+                    {{ estoque_baixo }},
+                    {{ estoque_zerado }}
+                ],
+                backgroundColor: ['#36a2eb', '#ffce56', '#ff6384']
+            }]
+        }
+    });
+
+    const cadastrosCtx = document.getElementById('cadastrosChart').getContext('2d');
+    const cadastrosChart = new Chart(cadastrosCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            datasets: [{
+                label: 'Produtos Cadastrados',
+                data: {{ cadastros_por_mes|safe }},
+                borderColor: '#4bc0c0',
+                tension: 0.1,
+                fill: true,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

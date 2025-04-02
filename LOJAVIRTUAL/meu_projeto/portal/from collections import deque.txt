@@ -1,0 +1,193 @@
+from collections import deque
+
+# Classe Livro para representar um livro no acervo
+class Livro:
+    def __init__(self, id_livro, titulo, autor, categoria, quantidade):
+        self.id_livro = id_livro
+        self.titulo = titulo
+        self.autor = autor
+        self.categoria = categoria
+        self.quantidade = quantidade  # Quantidade em estoque
+
+# Classe NodoBST para representar nós da árvore BST
+class NodoBST:
+    def __init__(self, livro):
+        self.livro = livro
+        self.esquerda = None
+        self.direita = None
+
+# Classe AcervoBST para gerenciar o acervo com uma Árvore de Busca Binária
+class AcervoBST:
+    def __init__(self):
+        self.raiz = None
+
+    def inserir(self, livro):
+        if not self.raiz:
+            self.raiz = NodoBST(livro)
+        else:
+            self._inserir(self.raiz, livro)
+
+    def _inserir(self, nodo, livro):
+        if livro.titulo < nodo.livro.titulo:
+            if nodo.esquerda is None:
+                nodo.esquerda = NodoBST(livro)
+            else:
+                self._inserir(nodo.esquerda, livro)
+        else:
+            if nodo.direita is None:
+                nodo.direita = NodoBST(livro)
+            else:
+                self._inserir(nodo.direita, livro)
+
+    # Função de busca por título com correspondência parcial
+    def busca_por_titulo_parcial(self, termo):
+        livros = []
+        self._busca_por_titulo_parcial(self.raiz, termo.lower(), livros)
+        return livros
+
+    def _busca_por_titulo_parcial(self, nodo, termo, livros):
+        if nodo:
+            # Verifica se o termo está contido no título do livro
+            if termo in nodo.livro.titulo.lower():
+                livros.append(nodo.livro)
+            self._busca_por_titulo_parcial(nodo.esquerda, termo, livros)
+            self._busca_por_titulo_parcial(nodo.direita, termo, livros)
+
+    def busca_por_autor(self, autor):
+        return self._busca_por_criterio(lambda livro: livro.autor == autor)
+
+    def busca_por_categoria(self, categoria):
+        return self._busca_por_criterio(lambda livro: livro.categoria == categoria)
+
+    def _busca_por_criterio(self, criterio):
+        livros = []
+        self._buscar_por_criterio(self.raiz, criterio, livros)
+        return livros
+
+    def _buscar_por_criterio(self, nodo, criterio, livros):
+        if nodo:
+            if criterio(nodo.livro):
+                livros.append(nodo.livro)
+            self._buscar_por_criterio(nodo.esquerda, criterio, livros)
+            self._buscar_por_criterio(nodo.direita, criterio, livros)
+
+# Gerenciamento de Empréstimos
+class GerenciamentoEmprestimos:
+    def __init__(self):
+        self.fila_emprestimos = deque()  # Fila para empréstimos pendentes
+        self.historico_usuarios = {}  # Histórico de empréstimos de cada usuário
+
+    def adicionar_emprestimo(self, usuario, livro):
+        if livro.quantidade > 0:
+            self.fila_emprestimos.append((usuario, livro))
+            if usuario not in self.historico_usuarios:
+                self.historico_usuarios[usuario] = []
+            self.historico_usuarios[usuario].append(livro)
+            livro.quantidade -= 1  # Reduz a quantidade do livro
+            return True
+        else:
+            return False  # Livro sem estoque
+
+# Relatórios de Atividade e Desempenho
+class Relatorios:
+    def __init__(self):
+        self.atividades = []
+
+    def registrar_atividade(self, atividade):
+        self.atividades.append(atividade)
+
+    def gerar_relatorio(self):
+        relatorio = {}
+        for atividade in self.atividades:
+            if atividade in relatorio:
+                relatorio[atividade] += 1
+            else:
+                relatorio[atividade] = 1
+        return relatorio
+
+# Função para o menu do usuário
+def menu_usuario(acervo, emprestimos, relatorios):
+    while True:
+        print("\nMenu Usuário:")
+        print("1. Buscar livro por título")
+        print("2. Buscar livro por autor")
+        print("3. Buscar livro por categoria")
+        print("4. Solicitar empréstimo de livro")
+        print("5. Sair")
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1":
+            termo = input("Digite parte do título do livro: ")
+            livros = acervo.busca_por_titulo_parcial(termo)
+            if livros:
+                for livro in livros:
+                    print(f"Encontrado: {livro.titulo} - {livro.autor} - {livro.categoria} - Estoque: {livro.quantidade}")
+            else:
+                print("Nenhum livro encontrado com esse termo no título.")
+        elif opcao == "2":
+            autor = input("Digite o autor do livro: ")
+            livros = acervo.busca_por_autor(autor)
+            if livros:
+                for livro in livros:
+                    print(f"{livro.titulo} - {livro.autor} - {livro.categoria} - Estoque: {livro.quantidade}")
+            else:
+                print("Nenhum livro encontrado para este autor.")
+        elif opcao == "3":
+            categoria = input("Digite a categoria do livro: ")
+            livros = acervo.busca_por_categoria(categoria)
+            if livros:
+                for livro in livros:
+                    print(f"{livro.titulo} - {livro.autor} - {livro.categoria} - Estoque: {livro.quantidade}")
+            else:
+                print("Nenhum livro encontrado para esta categoria.")
+        elif opcao == "4":
+            titulo = input("Digite o título do livro que deseja emprestar: ")
+            livro = acervo.busca_por_titulo_parcial(titulo)
+            if livro:
+                usuario = input("Digite seu nome: ")
+                if emprestimos.adicionar_emprestimo(usuario, livro[0]):
+                    relatorios.registrar_atividade("Empréstimo de livro")
+                    print(f"Empréstimo do livro '{livro[0].titulo}' registrado para {usuario}.")
+                else:
+                    print("Este livro está sem estoque no momento.")
+            else:
+                print("Livro não encontrado para empréstimo.")
+        elif opcao == "5":
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+# Função principal para escolher entre usuário e administrador
+def sistema_biblioteca():
+    acervo = AcervoBST()
+    emprestimos = GerenciamentoEmprestimos()
+    relatorios = Relatorios()
+
+    # Adicionando livros de exemplo ao acervo
+    livros_exemplo = [
+        Livro(1, "O Senhor dos Anéis", "J.R.R. Tolkien", "Fantasia", 3),
+        Livro(2, "1984", "George Orwell", "Distopia", 5),
+        Livro(3, "Dom Casmurro", "Machado de Assis", "Clássico", 2)
+    ]
+    for livro in livros_exemplo:
+        acervo.inserir(livro)
+
+    while True:
+        print("\nSistema de Biblioteca Digital")
+        print("1. Entrar como Usuário")
+        print("2. Entrar como Administrador")
+        print("3. Sair")
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1":
+            menu_usuario(acervo, emprestimos, relatorios)
+        elif opcao == "2":
+            menu_administrador(acervo, emprestimos, relatorios)
+        elif opcao == "3":
+            print("Saindo do sistema...")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+# Executando o sistema de biblioteca
+sistema_biblioteca()

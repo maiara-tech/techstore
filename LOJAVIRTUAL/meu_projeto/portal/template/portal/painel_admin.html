@@ -1,0 +1,42 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}Painel de Administração{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Painel de Administração</h2>
+    <a href="{% url 'logout' %}" class="btn btn-outline-danger">Sair</a>
+</div>
+
+<table class="table table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Preço</th>
+            <th>Estoque</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for produto in produtos %}
+        <tr>
+            <td>{{ produto.nome }}</td>
+            <td>{{ produto.descricao }}</td>
+            <td>R$ {{ produto.preco }}</td>
+            <td>{{ produto.estoque }}</td>  <!-- Verifique se é 'estoque' ou 'quantidade_estoque' -->
+            <td>
+                <a href="{% url 'editar_produto' produto.id %}" class="btn btn-warning btn-sm me-2">Editar</a>
+                <a href="{% url 'excluir_produto' produto.id %}" class="btn btn-danger btn-sm me-2">Excluir</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">Nenhum produto cadastrado.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+

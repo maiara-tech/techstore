@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.banner-container {
+    width: 100vw; /* Largura total da tela */
+    height: 100vh; /* Altura total da tela */
+    background: url('../images/banner_tecnologia.webp') no-repeat center center fixed;
+    background-size: cover; /* Ajusta a imagem para cobrir toda a tela */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    color: #fff;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Remove barras de rolagem */
+}
+

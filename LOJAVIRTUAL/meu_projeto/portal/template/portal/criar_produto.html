@@ -1,0 +1,34 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}Adicionar Produto{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">Adicionar Produto</h2>
+
+         <form method="post" action="{% url 'criar_produto' %}">
+
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.nome.id_for_label }}">Nome do Produto:</label>
+                {{ form.nome }}
+
+                <label for="{{ form.preco.id_for_label }}">Preço:</label>
+                {{ form.preco }}
+
+                <label for="{{ form.quantidade_estoque.id_for_label }}">Estoque:</label>
+                {{ form.quantidade_estoque }}
+
+                <label for="{{ form.descricao.id_for_label }}">Descrição:</label>
+                {{ form.descricao }}
+            </div>
+
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <a href="{% url 'listar_produtos' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
