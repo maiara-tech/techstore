@@ -14,7 +14,6 @@ O projeto **TechStore** é um sistema de gerenciamento de produtos para uma loja
 
 ## Como Executar o Projeto
 ### 1. Clonar o Repositório
-Caso o código esteja em um repositório Git, clone-o:
 ```sh
     git clone https://github.com/seu-repositorio.git
     cd techstore
@@ -28,8 +27,7 @@ Crie e ative um ambiente virtual Python:
     venv\Scripts\activate  # Windows
 ```
 
-### 3. Instalar Dependências
-Instale os pacotes necessários:
+### 3. Instalar os Arquivos necessários
 ```sh
     pip install -r requirements.txt
 ```
@@ -39,7 +37,7 @@ Instale os pacotes necessários:
     python manage.py migrate
 ```
 
-### 5. Criar um Superusuário (Opcional para Acesso ao Admin)
+### 5. Criar um Superusuário
 ```sh
     python manage.py createsuperuser
 ```
@@ -71,6 +69,6 @@ Acesse o sistema no navegador: **http://127.0.0.1:8000/**
 
 **Dúvidas ou sugestões? Entre em contato!**
 
-Para adicionar produtos ou editar e excluir
+**Para adicionar produtos ou editar e excluir**
 usuário - admin
 senha - 12345678
